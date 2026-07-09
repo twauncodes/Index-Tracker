@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Cartridge</title>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Cartridge" />
+<meta name="theme-color" content="#0f0d1a" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%230f0d1a'/%3E%3Crect x='18' y='30' width='64' height='40' rx='6' fill='%23eab54c'/%3E%3Crect x='30' y='18' width='16' height='16' fill='%23eab54c'/%3E%3Crect x='54' y='18' width='16' height='16' fill='%23eab54c'/%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%230f0d1a'/%3E%3Crect x='18' y='30' width='64' height='40' rx='6' fill='%23eab54c'/%3E%3C/svg%3E" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  :root{
+    --bg:#0f0d1a; --card:#171325; --card2:#1d1830; --line:#332c52;
+    --paper:#f3efe4; --paperMute:#9a92b0;
+    --gold:#eab54c; --goldDim:#5b4a26;
+    --mint:#5fe3c0; --mintDim:#294f45;
+    --coral:#ff7a68; --coralDim:#4a2a26;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0; padding:0; background:var(--bg); color:var(--paper); font-family:'Inter',sans-serif; min-height:100vh;}
+  body{padding-bottom:40px;}
+  .f-display{font-family:'Press Start 2P',monospace;}
+  .f-mono{font-family:'IBM Plex Mono',monospace;}
+  .header{padding:24px 16px 16px; border-bottom:1px solid var(--line);}
+  .header .logo{display:flex; align-items:center; gap:8px;}
+  .logo .dot{width:12px; height:12px; background:var(--gold); border-radius:2px;}
+  .header h1{font-size:11px; margin:0; letter-spacing:1px;}
+  .header p{font-size:11px; color:var(--paperMute); margin:8px 0 0;}
+  .focus{margin:16px; padding:12px; border-radius:10px; background:var(--card2); border:1px solid var(--line);}
+  .focus .label{font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--paperMute); margin-bottom:8px;}
+  .focus p{font-size:14px; margin:4px 0;}
+  .tag-edu{color:var(--gold); font-family:'IBM Plex Mono',monospace;}
+  .tag-gd{color:var(--coral); font-family:'IBM Plex Mono',monospace;}
+  .hud{margin:16px; display:grid; grid-template-columns:repeat(3,1fr); gap:8px;}
+  .hud-card{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px;}
+  .hud-card .top{display:flex; align-items:center; gap:5px; font-size:9px; letter-spacing:1px;}
+  .hud-card .val{font-family:'IBM Plex Mono',monospace; font-size:18px; margin-top:6px;}
+  .hud-card .sub{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--paperMute);}
+  .tabs{margin:20px 16px 0; display:flex; gap:4px; background:var(--card2); border:1px solid var(--line); border-radius:10px; padding:4px;}
+  .tab-btn{flex:1; padding:8px; border:none; border-radius:7px; font-size:14px; font-weight:500; background:transparent; color:var(--paperMute); font-family:'Inter',sans-serif;}
+  .tab-btn.active{color:var(--bg);}
+  .content{padding:20px 16px 60px;}
+  .box{border-radius:10px; padding:12px; margin-bottom:16px; background:var(--card); border:1px solid var(--line);}
+  .box .label{font-size:10px; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:10px;}
+  .rules li{font-size:14px; color:var(--paperMute); margin-bottom:4px; list-style:none;}
+  .trophy-case{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:20px;}
+  .trophy{aspect-ratio:1; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid var(--line); background:var(--card2);}
+  .trophy.unlocked{background:var(--goldDim); border-color:var(--gold); animation:glow 2.2s ease-in-out infinite;}
+  @keyframes glow{0%,100%{box-shadow:0 0 6px 1px rgba(234,181,76,.35);} 50%{box-shadow:0 0 14px 3px rgba(234,181,76,.65);}}
+  @media (prefers-reduced-motion:reduce){.trophy.unlocked{animation:none;}}
+  .trophy span{font-family:'IBM Plex Mono',monospace; font-size:8px; margin-top:4px;}
+  .week{border:1px solid var(--line); border-radius:10px; overflow:hidden; margin-bottom:8px;}
+  .week-head{width:100%; display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:var(--card); border:none; color:var(--paper); font-size:14px; font-family:'Inter',sans-serif;}
+  .week-head .left{display:flex; align-items:center; gap:8px;}
+  .week-body{padding:6px 12px 10px; background:var(--bg); display:none;}
+  .week-body.open{display:block;}
+  .day-row{width:100%; display:flex; align-items:flex-start; gap:8px; padding:6px 0; background:none; border:none; text-align:left; color:var(--paper); font-size:14px; font-family:'Inter',sans-serif;}
+  .day-row .dtag{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--gold); margin-right:6px;}
+  .day-row .htag{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--paperMute); margin-right:6px;}
+  .day-row.done span.txt{color:var(--paperMute); text-decoration:line-through;}
+  input, select{width:100%; padding:9px; border-radius:8px; border:1px solid var(--line); background:var(--card2); color:var(--paper); font-size:14px; font-family:'Inter',sans-serif;}
+  input[type=number]{font-family:'IBM Plex Mono',monospace;}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;}
+  .row-amt{display:flex; gap:8px; margin-bottom:8px;}
+  .row-amt input:first-child{width:96px; flex:none;}
+  .btn{width:100%; padding:10px; border:none; border-radius:8px; font-size:14px; font-weight:600; font-family:'Inter',sans-serif;}
+  .month-bar{display:flex; align-items:center; gap:8px; margin-bottom:8px;}
+  .month-bar .mk{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--paperMute); width:40px;}
+  .month-bar .track{flex:1; height:12px; border-radius:3px; background:var(--card2); overflow:hidden;}
+  .month-bar .fill{height:100%; background:var(--mint);}
+  .month-bar .amt{font-family:'IBM Plex Mono',monospace; font-size:10px; width:48px; text-align:right;}
+  .entry{display:flex; align-items:center; justify-content:space-between; border:1px solid var(--line); background:var(--card); border-radius:8px; padding:10px 12px; margin-bottom:6px;}
+  .entry .meta p{margin:0; font-size:14px;}
+  .entry .meta .date{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--paperMute); margin-top:2px;}
+  .entry .right{display:flex; align-items:center; gap:10px;}
+  .entry .amt{font-family:'IBM Plex Mono',monospace; font-size:14px; color:var(--mint);}
+  .icon-btn{background:none; border:none; padding:2px; color:var(--paperMute); font-size:16px; line-height:1;}
+  .phase-label{font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--paperMute); margin:16px 0 8px;}
+  .milestone{display:flex; align-items:center; justify-content:space-between; border:1px solid var(--line); background:var(--card); border-radius:8px; padding:10px 12px; margin-bottom:6px;}
+  .milestone .left{display:flex; align-items:center; gap:8px; flex:1;}
+  .milestone.done span.txt{color:var(--paperMute); text-decoration:line-through;}
+  .muted{color:var(--paperMute); font-size:14px;}
+  .check-empty{width:16px; height:16px; border-radius:50%; border:1.5px solid var(--paperMute); flex-shrink:0;}
+  .check-done{width:16px; height:16px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--bg);}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const STORAGE_KEY = "cartridge-tracker-v1";
+
+function seedEducation(){
+  return [
+    {week:1, trophy:"Mad Libs Game", days:[
+      {d:"Mon",h:"1.5h",t:"CS50P — Lecture 0 (Functions & Variables)",done:false},
+      {d:"Tue",h:"1.5h",t:"Codédex — Python Ch. 1",done:false},
+      {d:"Wed",h:"1.5h",t:"CS50P — Problem Set 0",done:false},
+      {d:"Thu",h:"1.5h",t:"Codédex Ch. 2 + Replit setup",done:false},
+      {d:"Fri",h:"45m",t:"GitHub setup — create gamedev-journey repo",done:false},
+      {d:"Sat",h:"3h",t:"BUILD: Mad Libs in Python (no tutorials, no AI)",done:false},
+      {d:"Sun",h:"2h",t:"BUILD: Polish + ship to GitHub",done:false},
+    ]},
+    {week:2, trophy:"Higher or Lower", days:[
+      {d:"Mon",h:"1.5h",t:"CS50P — Lecture 1 (Conditionals)",done:false},
+      {d:"Tue",h:"1.5h",t:"Codédex — Conditionals chapter",done:false},
+      {d:"Wed",h:"1.5h",t:"CS50P — Problem Set 1",done:false},
+      {d:"Thu",h:"1.5h",t:"Boot.dev — free intro lessons",done:false},
+      {d:"Fri",h:"off",t:"Rest / pixel art",done:false},
+      {d:"Sat",h:"3h",t:"BUILD: Higher or Lower",done:false},
+      {d:"Sun",h:"2h",t:"BUILD: Add difficulty modes, push",done:false},
+    ]},
+    {week:3, trophy:"Rock Paper Scissors", days:[
+      {d:"Mon",h:"1.5h",t:"CS50P — Lecture 2 (Loops)",done:false},
+      {d:"Tue",h:"1.5h",t:"Codédex — Loops chapter",done:false},
+      {d:"Wed",h:"1.5h",t:"CS50P — Problem Set 2",done:false},
+      {d:"Thu",h:"1.5h",t:"Exercism — 3 easy Python problems",done:false},
+      {d:"Fri",h:"off",t:"Rest / pixel art",done:false},
+      {d:"Sat",h:"3h",t:"BUILD: Rock Paper Scissors, best of 5",done:false},
+      {d:"Sun",h:"2h",t:"BUILD: Add stats tracker, push",done:false},
+    ]},
+    {week:4, trophy:"Hangman", days:[
+      {d:"Mon",h:"1.5h",t:"CS50P — Lecture 3 (Exceptions)",done:false},
+      {d:"Tue",h:"1.5h",t:"Codédex — Functions chapter",done:false},
+      {d:"Wed",h:"1.5h",t:"CS50P — Problem Set 3",done:false},
+      {d:"Thu",h:"1.5h",t:"Refactor old projects into functions",done:false},
+      {d:"Fri",h:"off",t:"Rest / pixel art",done:false},
+      {d:"Sat",h:"4h",t:"BUILD: Hangman with ASCII gallows",done:false},
+      {d:"Sun",h:"2h",t:"BUILD: Word list from file, push",done:false},
+    ]},
+    {week:5, trophy:"Text Adventure Game", days:[
+      {d:"Mon",h:"1.5h",t:"CS50P — Lecture 4 (Libraries)",done:false},
+      {d:"Tue",h:"1.5h",t:"Codédex — Lists & Dictionaries",done:false},
+      {d:"Wed",h:"1.5h",t:"CS50P — Problem Set 4",done:false},
+      {d:"Thu",h:"1.5h",t:"Exercism — 3 medium problems",done:false},
+      {d:"Fri",h:"off",t:"Rest / pixel art",done:false},
+      {d:"Sat",h:"4h",t:"BUILD: Text adventure, 5 rooms, inventory",done:false},
+      {d:"Sun",h:"3h",t:"BUILD: Add enemies + combat, push",done:false},
+    ]},
+    {week:6, trophy:"OOP Text Adventure", days:[
+      {d:"Mon",h:"2h",t:"CS50P — Lecture 7 (OOP)",done:false},
+      {d:"Tue",h:"1.5h",t:"Codédex — Classes chapter",done:false},
+      {d:"Wed",h:"1.5h",t:"Practice: standalone Inventory class",done:false},
+      {d:"Thu",h:"1.5h",t:"Boot.dev OOP or Exercism class problems",done:false},
+      {d:"Fri",h:"off",t:"Rest / reflection",done:false},
+      {d:"Sat",h:"4h",t:"BUILD: Refactor text adventure into classes",done:false},
+      {d:"Sun",h:"2h",t:"BUILD: Polish + celebrate — Python done",done:false},
+    ]},
+    {week:7, trophy:"Dodge the Creeps", days:[
+      {d:"Mon",h:"1.5h",t:"GDQuest — Learn GDScript, lessons 1–4",done:false},
+      {d:"Tue",h:"1.5h",t:"GDQuest — lessons 5–8",done:false},
+      {d:"Wed",h:"1.5h",t:"Godot Docs — Step by Step intro",done:false},
+      {d:"Thu",h:"1.5h",t:"GDQuest — lessons 9–12 (Signals)",done:false},
+      {d:"Fri",h:"off",t:"Rest / pixel art",done:false},
+      {d:"Sat",h:"4h",t:"BUILD: Godot 'Your First 2D Game' tutorial",done:false},
+      {d:"Sun",h:"3h",t:"BUILD: Swap in own sprites, push",done:false},
+    ]},
+    {week:8, trophy:"Pong (From Scratch)", days:[
+      {d:"Mon",h:"1.5h",t:"GDQuest — final GDScript lessons",done:false},
+      {d:"Tue",h:"1.5h",t:"Godot Docs — Signals deep dive",done:false},
+      {d:"Wed",h:"1.5h",t:"Godot Docs — Scenes & Instancing",done:false},
+      {d:"Thu",h:"1.5h",t:"PLAN: Pong on paper before coding",done:false},
+      {d:"Fri",h:"off",t:"Rest / pixel art",done:false},
+      {d:"Sat",h:"4h",t:"BUILD: Pong from scratch — docs only, no AI",done:false},
+      {d:"Sun",h:"3h",t:"BUILD: Finish + 2-month reflection, push",done:false},
+    ]},
+  ];
+}
+
+function seedGamedev(){
+  return [
+    {id:"g1",phase:"Phase 0–2",title:"Skeleton project + save system",done:true},
+    {id:"g2",phase:"Phase 0–2",title:"Data layer (GameState.gd, MonsterData.gd)",done:true},
+    {id:"g3",phase:"Phase 0–2",title:"Battle engine (BattleMath.gd, Battle.gd, BattleSetup.gd, BattleTab.gd)",done:true},
+    {id:"g4",phase:"Phase 3",title:"Victory / Defeat reward panel",done:false},
+    {id:"g5",phase:"Phase 3",title:"Farm tab + coin economy loop",done:false},
+    {id:"g6",phase:"Phase 3",title:"Leveling + evolution, 3 starters",done:false},
+    {id:"g7",phase:"Phase 3",title:"Full save/load integration pass",done:false},
+    {id:"g8",phase:"Phase 4",title:"TestFlight build (iOS)",done:false},
+    {id:"g9",phase:"Phase 4",title:"Ship v1 publicly",done:false},
+  ];
+}
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {education: seedEducation(), income: [], gamedev: seedGamedev()};
+}
+function saveData(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data)); }catch(e){}
+}
+
+const state = {
+  data: loadData(),
+  tab: "education",
+  openWeek: null,
+  incomeForm: {source:"Fiverr", amount:"", note:"", date: new Date().toISOString().slice(0,10)},
+  newMilestone: "",
+  newPhase: "Phase 5",
+};
+(function initOpenWeek(){
+  const w = state.data.education.find(w => !w.days.every(d=>d.done));
+  state.openWeek = w ? w.week : 1;
+})();
+
+function monthKey(iso){ return iso.slice(0,7); }
+function monthLabel(mk){
+  const [y,m] = mk.split("-");
+  return new Date(Number(y), Number(m)-1, 1).toLocaleDateString(undefined,{month:"short", year:"2-digit"});
+}
+function esc(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+
+function render(){
+  const d = state.data;
+  const trophiesUnlocked = d.education.filter(w=>w.days.every(x=>x.done)).length;
+  const totalDays = d.education.reduce((a,w)=>a+w.days.length,0);
+  const doneDays = d.education.reduce((a,w)=>a+w.days.filter(x=>x.done).length,0);
+  const totalIncome = d.income.reduce((a,e)=>a+Number(e.amount||0),0);
+  const thisMonthKey = new Date().toISOString().slice(0,7);
+  const thisMonthIncome = d.income.filter(e=>monthKey(e.date)===thisMonthKey).reduce((a,e)=>a+Number(e.amount||0),0);
+  const milestonesDone = d.gamedev.filter(m=>m.done).length;
+
+  let nextEdu = null;
+  outer: for(const w of d.education){ for(const dd of w.days){ if(!dd.done){ nextEdu={week:w.week, ...dd}; break outer; } } }
+  const nextMilestone = d.gamedev.find(m=>!m.done);
+
+  let html = `
+  <div class="header">
+    <div class="logo"><div class="dot"></div><h1 class="f-display">CARTRIDGE</h1></div>
+    <p>your studio, tracked like a save file</p>
+  </div>
+  <div class="focus">
+    <div class="label">next up</div>
+    ${nextEdu ? `<p><span class="tag-edu">[edu]</span> Wk${nextEdu.week} ${nextEdu.d} — ${esc(nextEdu.t)}</p>` : `<p style="color:var(--mint)">all 8 weeks complete 🎉</p>`}
+    ${nextMilestone ? `<p><span class="tag-gd">[gamedev]</span> ${esc(nextMilestone.title)}</p>` : `<p style="color:var(--mint)">all milestones complete</p>`}
+  </div>
+  <div class="hud">
+    <div class="hud-card"><div class="top" style="color:var(--gold)">TROPHIES</div><div class="val">${trophiesUnlocked}/8</div><div class="sub">${doneDays}/${totalDays} days</div></div>
+    <div class="hud-card"><div class="top" style="color:var(--mint)">INCOME</div><div class="val">$${totalIncome.toFixed(0)}</div><div class="sub">$${thisMonthIncome.toFixed(0)} this mo</div></div>
+    <div class="hud-card"><div class="top" style="color:var(--coral)">GAMEDEV</div><div class="val">${milestonesDone}/${d.gamedev.length}</div><div class="sub">milestones</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn ${state.tab==='education'?'active':''}" style="${state.tab==='education'?'background:var(--gold)':''}" data-tab="education">Education</button>
+    <button class="tab-btn ${state.tab==='income'?'active':''}" style="${state.tab==='income'?'background:var(--mint)':''}" data-tab="income">Income</button>
+    <button class="tab-btn ${state.tab==='gamedev'?'active':''}" style="${state.tab==='gamedev'?'background:var(--coral)':''}" data-tab="gamedev">Game Dev</button>
+  </div>
+  <div class="content">
+  `;
+
+  if(state.tab === "education") html += renderEducation(d, trophiesUnlocked);
+  if(state.tab === "income") html += renderIncome(d);
+  if(state.tab === "gamedev") html += renderGamedev(d);
+
+  html += `</div>`;
+  document.getElementById("app").innerHTML = html;
+  attachHandlers();
+}
+
+function renderEducation(d, trophiesUnlocked){
+  let h = `
+  <div class="box">
+    <div class="label" style="color:var(--gold)">three rules</div>
+    <ul class="rules">
+      <li>1. Type every line yourself — no copy-paste.</li>
+      <li>2. AI is a tutor, not a crutch. Write first, ask "why," not "fix."</li>
+      <li>3. Ship every weekend, no matter how small.</li>
+    </ul>
+  </div>
+  <div class="trophy-case">
+  `;
+  d.education.forEach(w=>{
+    const unlocked = w.days.every(x=>x.done);
+    h += `<div class="trophy ${unlocked?'unlocked':''}" title="${esc(w.trophy)}">
+      <div style="font-size:16px;">${unlocked?'🏆':'🔒'}</div>
+      <span style="color:${unlocked?'var(--gold)':'var(--paperMute)'}">W${w.week}</span>
+    </div>`;
+  });
+  h += `</div>`;
+
+  d.education.forEach((w, wi)=>{
+    const unlocked = w.days.every(x=>x.done);
+    const isOpen = state.openWeek === w.week;
+    const doneCount = w.days.filter(x=>x.done).length;
+    h += `<div class="week">
+      <button class="week-head" data-week-toggle="${w.week}">
+        <span class="left">${unlocked?'🏆':'○'} Week ${w.week} — ${esc(w.trophy)}</span>
+        <span class="f-mono" style="color:var(--paperMute)">${doneCount}/${w.days.length}</span>
+      </button>
+      <div class="week-body ${isOpen?'open':''}">`;
+    w.days.forEach((dd, di)=>{
+      h += `<button class="day-row ${dd.done?'done':''}" data-day-toggle="${wi}:${di}">
+        <span class="${dd.done?'check-done':'check-empty'}" style="${dd.done?'background:var(--mint)':''}">${dd.done?'✓':''}</span>
+        <span class="txt"><span class="dtag">${dd.d}</span><span class="htag">${dd.h}</span>${esc(dd.t)}</span>
+      </button>`;
+    });
+    h += `</div></div>`;
+  });
+  return h;
+}
+
+function renderIncome(d){
+  const byMonth = {};
+  d.income.forEach(e=>{ const mk=monthKey(e.date); byMonth[mk]=(byMonth[mk]||0)+Number(e.amount); });
+  const months = Object.keys(byMonth).sort();
+  const maxMonth = Math.max(1, ...months.map(m=>byMonth[m]));
+
+  let h = `
+  <div class="box">
+    <div class="label" style="color:var(--mint)">log a payment</div>
+    <div class="row2">
+      <select id="inc-source">
+        <option ${state.incomeForm.source==='Fiverr'?'selected':''}>Fiverr</option>
+        <option ${state.incomeForm.source==='Itch.io'?'selected':''}>Itch.io</option>
+        <option ${state.incomeForm.source==='Reddit commission'?'selected':''}>Reddit commission</option>
+        <option ${state.incomeForm.source==='Data annotation'?'selected':''}>Data annotation</option>
+        <option ${state.incomeForm.source==='Other'?'selected':''}>Other</option>
+      </select>
+      <input type="date" id="inc-date" value="${state.incomeForm.date}" />
+    </div>
+    <div class="row-amt">
+      <input type="number" id="inc-amount" placeholder="amount $" value="${state.incomeForm.amount}" />
+      <input type="text" id="inc-note" placeholder="note (optional)" value="${esc(state.incomeForm.note)}" />
+    </div>
+    <button class="btn" id="inc-add" style="background:var(--mint); color:var(--bg)">+ Add entry</button>
+  </div>
+  `;
+
+  if(months.length){
+    h += `<div class="box"><div class="label" style="color:var(--mint)">by month</div>`;
+    months.forEach(mk=>{
+      h += `<div class="month-bar">
+        <span class="mk">${monthLabel(mk)}</span>
+        <div class="track"><div class="fill" style="width:${(byMonth[mk]/maxMonth)*100}%"></div></div>
+        <span class="amt">$${byMonth[mk].toFixed(0)}</span>
+      </div>`;
+    });
+    h += `</div>`;
+  }
+
+  h += `<div class="label" style="color:var(--paperMute)">log</div>`;
+  if(d.income.length === 0){
+    h += `<p class="muted">No entries yet. Log your first Fiverr or Itch sale above.</p>`;
+  }
+  d.income.forEach(e=>{
+    h += `<div class="entry">
+      <div class="meta"><p>${esc(e.source)}${e.note?` — ${esc(e.note)}`:''}</p><p class="date">${e.date}</p></div>
+      <div class="right"><span class="amt">$${Number(e.amount).toFixed(0)}</span>
+        <button class="icon-btn" data-inc-del="${e.id}">✕</button></div>
+    </div>`;
+  });
+  return h;
+}
+
+function renderGamedev(d){
+  const phases = [...new Set(d.gamedev.map(m=>m.phase))];
+  let h = `
+  <div class="box">
+    <div class="label" style="color:var(--coral)">add milestone</div>
+    <div class="row-amt">
+      <input type="text" id="ms-phase" placeholder="phase" value="${esc(state.newPhase)}" style="width:96px; flex:none;" />
+      <input type="text" id="ms-title" placeholder="milestone title" value="${esc(state.newMilestone)}" />
+    </div>
+    <button class="btn" id="ms-add" style="background:var(--coral); color:var(--bg)">+ Add</button>
+  </div>
+  `;
+  phases.forEach(phase=>{
+    h += `<div class="phase-label">${esc(phase)}</div>`;
+    d.gamedev.filter(m=>m.phase===phase).forEach(m=>{
+      h += `<div class="milestone ${m.done?'done':''}">
+        <button class="left" data-ms-toggle="${m.id}" style="background:none;border:none;">
+          <span class="${m.done?'check-done':'check-empty'}" style="${m.done?'background:var(--coral)':''}">${m.done?'✓':''}</span>
+          <span class="txt" style="color:${m.done?'var(--paperMute)':'var(--paper)'}">${esc(m.title)}</span>
+        </button>
+        <button class="icon-btn" data-ms-del="${m.id}">✕</button>
+      </div>`;
+    });
+  });
+  return h;
+}
+
+function attachHandlers(){
+  document.querySelectorAll("[data-tab]").forEach(el=>{
+    el.onclick = ()=>{ state.tab = el.dataset.tab; render(); };
+  });
+  document.querySelectorAll("[data-week-toggle]").forEach(el=>{
+    el.onclick = ()=>{
+      const wk = Number(el.dataset.weekToggle);
+      state.openWeek = state.openWeek === wk ? null : wk;
+      render();
+    };
+  });
+  document.querySelectorAll("[data-day-toggle]").forEach(el=>{
+    el.onclick = ()=>{
+      const [wi, di] = el.dataset.dayToggle.split(":").map(Number);
+      state.data.education[wi].days[di].done = !state.data.education[wi].days[di].done;
+      saveData(); render();
+    };
+  });
+  const incAdd = document.getElementById("inc-add");
+  if(incAdd){
+    incAdd.onclick = ()=>{
+      const source = document.getElementById("inc-source").value;
+      const date = document.getElementById("inc-date").value;
+      const amount = Number(document.getElementById("inc-amount").value);
+      const note = document.getElementById("inc-note").value.trim();
+      if(!amount || amount<=0) return;
+      state.data.income.unshift({id:"i"+Date.now(), source, amount, note, date});
+      state.incomeForm = {source, amount:"", note:"", date};
+      saveData(); render();
+    };
+  }
+  document.querySelectorAll("[data-inc-del]").forEach(el=>{
+    el.onclick = ()=>{
+      state.data.income = state.data.income.filter(e=>e.id!==el.dataset.incDel);
+      saveData(); render();
+    };
+  });
+  const msAdd = document.getElementById("ms-add");
+  if(msAdd){
+    msAdd.onclick = ()=>{
+      const phase = document.getElementById("ms-phase").value.trim() || "Backlog";
+      const title = document.getElementById("ms-title").value.trim();
+      if(!title) return;
+      state.data.gamedev.push({id:"g"+Date.now(), phase, title, done:false});
+      state.newMilestone=""; state.newPhase=phase;
+      saveData(); render();
+    };
+  }
+  document.querySelectorAll("[data-ms-toggle]").forEach(el=>{
+    el.onclick = ()=>{
+      const m = state.data.gamedev.find(x=>x.id===el.dataset.msToggle);
+      m.done = !m.done;
+      saveData(); render();
+    };
+  });
+  document.querySelectorAll("[data-ms-del]").forEach(el=>{
+    el.onclick = ()=>{
+      state.data.gamedev = state.data.gamedev.filter(m=>m.id!==el.dataset.msDel);
+      saveData(); render();
+    };
+  });
+}
+
+render();
+</script>
+</body>
+</html>
